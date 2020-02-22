@@ -1,0 +1,33 @@
+# Parameters for train_eval:
+# ==============================================================================
+train_eval.env_name = 'carla-v0'
+train_eval.agent_name = 'latent_sac'
+train_eval.model_network_ctor_type = 'hierarchical'
+
+train_eval.initial_model_train_steps = 0
+train_eval.num_iterations = 3000000
+train_eval.batch_size = 256
+train_eval.model_batch_size = 32
+train_eval.sequence_length = 10
+
+train_eval.num_eval_episodes = 10
+train_eval.eval_interval = 2000
+train_eval.summary_interval = 2000
+
+train_eval.initial_collect_steps = 1000
+
+train_eval.debug_summaries = False
+train_eval.num_images_per_summary = 2
+ 
+train_eval.train_checkpoint_interval = 2000
+train_eval.policy_checkpoint_interval = 2000
+train_eval.rb_checkpoint_interval = 2000
+train_eval.action_repeat=4
+
+train_eval.input_names=['camera', 'lidar']
+train_eval.mask_names=['birdeye']
+
+# Parameters for load_carla_env:
+# ==============================================================================
+load_carla_env.max_time_episode=500
+load_carla_env.port=2000

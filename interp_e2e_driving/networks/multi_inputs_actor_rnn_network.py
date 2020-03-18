@@ -1,24 +1,4 @@
-# coding=utf-8
-# Copyright 2018 The TF-Agents Authors.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
-"""Sample recurrent Actor network to use with DDPG agents.
-Note: This network scales actions to fit the given spec by using `tanh`. Due to
-the nature of the `tanh` function, actions near the spec bounds cannot be
-returned.
-"""
-
+# This file is modified from <https://github.com/tensorflow/agents>
 import functools
 import gin
 import tensorflow as tf
@@ -61,10 +41,9 @@ def _copy_layer(layer):
   return type(layer).from_config(layer.get_config())
 
 
-# TODO(kbanoop): Reduce code duplication with other actor networks.
 @gin.configurable
 class MultiInputsActorRnnNetwork(network.Network):
-  """Creates a recurrent actor network."""
+  """Creates a recurrent actor network with multiple source inputs."""
 
   def __init__(self,
                input_tensor_spec,
@@ -83,6 +62,15 @@ class MultiInputsActorRnnNetwork(network.Network):
         input observations.
       output_tensor_spec: A nest of `tensor_spec.BoundedTensorSpec` representing
         the actions.
+      preprocessing_layers: (Optional.) A nest of `tf.keras.layers.Layer`
+        representing preprocessing for the different observations.
+        All of these layers must not be already built. For more details see
+        the documentation of `networks.EncodingNetwork`.
+      preprocessing_combiner: (Optional.) A keras layer that takes a flat list
+        of tensors and combines them. Good options include
+        `tf.keras.layers.Add` and `tf.keras.layers.Concatenate(axis=-1)`.
+        This layer must not be already built. For more details see
+        the documentation of `networks.EncodingNetwork`.
       conv_layer_params: Optional list of convolution layers parameters, where
         each item is a length-three tuple indicating (filters, kernel_size,
         stride).
@@ -177,7 +165,6 @@ class MultiInputsActorRnnNetwork(network.Network):
     self._flat_preprocessing_layers = flat_preprocessing_layers
     self._preprocessing_combiner = preprocessing_combiner
 
-  # TODO(kbanoop): Standardize argument names across different networks.
   def call(self, observation, step_type, network_state=None, training=False):
     # Preprocess for multiple observations
     if self._flat_preprocessing_layers is None:

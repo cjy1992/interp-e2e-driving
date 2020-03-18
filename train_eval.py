@@ -1,3 +1,7 @@
+# Copyright (c) 2019: Jianyu Chen (jianyuchen@berkeley.edu).
+#
+# This work is licensed under the terms of the MIT license.
+# For a copy, see <https://opensource.org/licenses/MIT>.
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
@@ -86,6 +90,7 @@ def load_carla_env(
   desired_speed=8,
   max_ego_spawn_times=200,
   display_route=True,
+  pixor_size=64,
   obs_channels=None,
   action_repeat=1):
   """Loads train and eval environments."""
@@ -113,6 +118,7 @@ def load_carla_env(
     'desired_speed': desired_speed,  # desired speed (m/s)
     'max_ego_spawn_times': max_ego_spawn_times,  # maximum times to spawn ego vehicle
     'display_route': display_route,  # whether to render the desired route
+    'pixor_size': pixor_size,  # size of the pixor labels
   }
 
   gym_spec = gym.spec(env_name)
@@ -159,6 +165,7 @@ def compute_summaries(metrics,
     images = []
     latents = []
 
+  # Get input images and latent states
   episode = 0
   while episode < num_episodes:
     action_step = policy.action(time_step, policy_state)
@@ -182,29 +189,31 @@ def compute_summaries(metrics,
 
     time_step = next_time_step
 
+  # Summarize scalars to tensorboard
   if train_step and summary_writer:
     with summary_writer.as_default():
       for m in metrics:
         tag = m.name
         tf.compat.v2.summary.scalar(name=tag, data=m.result(), step=train_step)
 
-  # shape of images is [[images in episode as timesteps]]
-  if images:
-    if type(images[0][0]) is collections.OrderedDict:
-      images = pad_and_concatenate_videos(images, image_keys=image_keys, is_dict=True)
-    else:
-      images = pad_and_concatenate_videos(images, image_keys=image_keys, is_dict=False)
-    images = tf.image.convert_image_dtype([images], tf.uint8, saturate=True)
-    images = tf.squeeze(images, axis=2)
-    
-    reconstruct_images = get_latent_reconstruction_videos(latents, model_net)
-    reconstruct_images = tf.image.convert_image_dtype([reconstruct_images], tf.uint8, saturate=True)
+  # Concat input images of different episodes and generate reconstructed images.
+  # Shape of images is [[images in episode as timesteps]].
+  if type(images[0][0]) is collections.OrderedDict:
+    images = pad_and_concatenate_videos(images, image_keys=image_keys, is_dict=True)
+  else:
+    images = pad_and_concatenate_videos(images, image_keys=image_keys, is_dict=False)
+  images = tf.image.convert_image_dtype([images], tf.uint8, saturate=True)
+  images = tf.squeeze(images, axis=2)
+  
+  reconstruct_images = get_latent_reconstruction_videos(latents, model_net)
+  reconstruct_images = tf.image.convert_image_dtype([reconstruct_images], tf.uint8, saturate=True)
 
-    # Need to avoid eager here to avoid rasing error
-    gif_summary = common.function(gif_utils.gif_summary_v2)
+  # Need to avoid eager here to avoid rasing error
+  gif_summary = common.function(gif_utils.gif_summary_v2)
 
-    gif_summary('ObservationVideoEvalPolicy', images, 1, fps)
-    gif_summary('ReconstructedVideoEvalPolicy', reconstruct_images, 1, fps)
+  # Summarize to tensorboard
+  gif_summary('ObservationVideoEvalPolicy', images, 1, fps)
+  gif_summary('ReconstructedVideoEvalPolicy', reconstruct_images, 1, fps)
 
 
 def pad_and_concatenate_videos(videos, image_keys, is_dict=False):
@@ -254,6 +263,8 @@ def normal_projection_net(action_spec,
 
 
 class Preprocessing_Layer(tf.keras.layers.Layer):
+  """Preprocessing layers for multiple source inputs."""
+
   def __init__(self, base_depth, feature_size, name=None):
     super(Preprocessing_Layer, self).__init__(name=name)
     self.base_depth = base_depth
@@ -321,9 +332,7 @@ def train_eval(
     target_update_period=1,
     # Params for train
     train_steps_per_iteration=1,
-    trainable_model=True,  # whether to train model
     initial_model_train_steps=100000,  # initial model training
-    train_model=True,  # whether to train model during RL
     batch_size=256,
     model_batch_size=32,  # model training batch size
     sequence_length=4,  # number of timesteps to train model
@@ -413,7 +422,7 @@ def train_eval(
         model_network_ctor = sequential_latent_network.SequentialLatentModelNonHierarchical
       else:
         raise NotImplementedError
-      model_net = model_network_ctor(input_names, mask_names)
+      model_net = model_network_ctor(input_names, input_names+mask_names)
 
       # Get the latent spec
       latent_size = model_net.latent_size
@@ -746,7 +755,7 @@ def train_eval(
         # Run collect
         time_step, _ = collect_driver.run(time_step=time_step)
 
-        ## Train an iteration
+        # Train an iteration
         for _ in range(train_steps_per_iteration):
           train_step()
 

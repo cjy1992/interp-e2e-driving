@@ -1,22 +1,7 @@
-# coding=utf-8
-# Copyright 2018 The TF-Agents Authors.
+# Copyright (c) 2019: Jianyu Chen (jianyuchen@berkeley.edu).
 #
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
-"""Actor Policy based on an actor network.
-This is used in e.g. actor-critic algorithms like DDPG.
-"""
-
+# This work is licensed under the terms of the MIT license.
+# For a copy, see <https://opensource.org/licenses/MIT>.
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
@@ -90,7 +75,7 @@ class LatentActorPolicy(tf_policy.Base):
         name=name)
 
   def _get_initial_state(self, batch_size):
-    """The initial state, which is the prior"""
+    """The initial state, which is the prior."""
     network_state = tensor_spec.zero_spec_nest(
         self._policy_state_spec[0],
         outer_dims=None if batch_size is None else [batch_size])
@@ -101,7 +86,7 @@ class LatentActorPolicy(tf_policy.Base):
     return (network_state, latent_state, last_action)
 
   def _apply_actor_network(self, time_step, policy_state):
-    """Generate action using actor network with latent"""
+    """Generate action using actor network with latent."""
     network_state, latent_state, _ = policy_state
     return self._inner_policy._actor_network(
         latent_state, time_step.step_type, network_state)
@@ -112,8 +97,7 @@ class LatentActorPolicy(tf_policy.Base):
     return variables
 
   def _action(self, time_step, policy_state, seed):
-    """This will update the state based on time_step and generate action.
-    """
+    """This will update the state based on time_step and generate action."""
     distribution_step = self._distribution(time_step, policy_state)
     action = distribution_step.action.sample(seed=seed)
 

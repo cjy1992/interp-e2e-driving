@@ -1,20 +1,4 @@
-# coding=utf-8
-# Copyright 2018 The TF-Agents Authors.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
-"""Sample recurrent Critic network to use with DDPG agents."""
-
+# This file is modified from <https://github.com/tensorflow/agents>
 from absl import logging
 
 import gin
@@ -58,7 +42,7 @@ def _copy_layer(layer):
 
 @gin.configurable
 class MultiInputsCriticRnnNetwork(network.Network):
-  """Creates a recurrent Critic network."""
+  """Creates a recurrent critic network with multiple source inputs."""
 
   def __init__(self,
                input_tensor_spec,
@@ -74,12 +58,15 @@ class MultiInputsCriticRnnNetwork(network.Network):
     Args:
       input_tensor_spec: A tuple of (observation, action) each of type
         `tensor_spec.TensorSpec` representing the inputs.
-      observation_conv_layer_params: Optional list of convolution layers
-        parameters to apply to the observations, where each item is a
-        length-three tuple indicating (filters, kernel_size, stride).
-      observation_fc_layer_params: Optional list of fully_connected parameters,
-        where each item is the number of units in the layer. This is applied
-        after the observation convultional layer.
+      preprocessing_layers: (Optional.) A nest of `tf.keras.layers.Layer`
+        representing preprocessing for the different observations.
+        All of these layers must not be already built. For more details see
+        the documentation of `networks.EncodingNetwork`.
+      preprocessing_combiner: (Optional.) A keras layer that takes a flat list
+        of tensors and combines them. Good options include
+        `tf.keras.layers.Add` and `tf.keras.layers.Concatenate(axis=-1)`.
+        This layer must not be already built. For more details see
+        the documentation of `networks.EncodingNetwork`.
       action_fc_layer_params: Optional list of parameters for a fully_connected
         layer to apply to the actions, where each item is the number of units
         in the layer.
@@ -128,8 +115,6 @@ class MultiInputsCriticRnnNetwork(network.Network):
 
     if preprocessing_combiner is not None:
       preprocessing_combiner = _copy_layer(preprocessing_combiner)
-
-
 
     action_layers = utils.mlp_layers(
         None,
@@ -189,7 +174,6 @@ class MultiInputsCriticRnnNetwork(network.Network):
     self._flat_preprocessing_layers = flat_preprocessing_layers
     self._preprocessing_combiner = preprocessing_combiner
 
-  # TODO(kbanoop): Standardize argument names across different networks.
   def call(self, inputs, step_type, network_state=None, training=False):
     observation, action = inputs
     observation_spec, _ = self.input_tensor_spec

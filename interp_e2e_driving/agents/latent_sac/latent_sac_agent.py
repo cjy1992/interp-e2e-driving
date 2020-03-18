@@ -1,3 +1,7 @@
+# Copyright (c) 2019: Jianyu Chen (jianyuchen@berkeley.edu).
+#
+# This work is licensed under the terms of the MIT license.
+# For a copy, see <https://opensource.org/licenses/MIT>.
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
@@ -11,9 +15,9 @@ from tf_agents.policies import greedy_policy
 from tf_agents.trajectories import trajectory
 from tf_agents.utils import eager_utils
 
-from inter_e2e_driving.policies import latent_actor_policy
-from inter_e2e_driving.utils import gif_utils
-from inter_e2e_driving.utils import nest_utils
+from interp_e2e_driving.policies import latent_actor_policy
+from interp_e2e_driving.utils import gif_utils
+from interp_e2e_driving.utils import nest_utils
 
 LatentSacLossInfo = collections.namedtuple(
     'LatentSacLossInfo', ('sac_loss', 'model_loss'))

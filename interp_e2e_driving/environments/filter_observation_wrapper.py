@@ -1,3 +1,7 @@
+# Copyright (c) 2019: Jianyu Chen (jianyuchen@berkeley.edu).
+#
+# This work is licensed under the terms of the MIT license.
+# For a copy, see <https://opensource.org/licenses/MIT>.
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
@@ -10,6 +14,8 @@ import tensorflow as tf
 from tf_agents.environments import wrappers
 
 class FilterObservationWrapper(wrappers.PyEnvironmentBaseWrapper):
+  """Environment wrapper to filter observation channels."""
+
   def __init__(self, gym_env, input_channels):
     super(FilterObservationWrapper, self).__init__(gym_env)
     self.input_channels = input_channels

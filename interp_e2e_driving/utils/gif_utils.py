@@ -1,4 +1,4 @@
-# Copyright (c) 2019: Jianyu Chen (jianyuchen@berkeley.edu).
+# Copyright (c) 2020: Jianyu Chen (jianyuchen@berkeley.edu).
 #
 # This file is modified from <https://github.com/alexlee-gk/slac>:
 # Copyright (c) 2019 alexlee-gk

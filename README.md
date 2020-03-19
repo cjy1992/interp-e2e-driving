@@ -10,18 +10,18 @@ $ conda create -n env_name python=3.6
 $ conda activate env_name
 ```
 
-2. Clone this git repo
+2. Install the gym-carla wrapper following the installation steps in [https://github.com/cjy1992/gym-carla](https://github.com/cjy1992/gym-carla).
+
+3. Clone this git repo
 ```
 $ git clone https://github.com/cjy1992/interp-e2e-driving.git
 ```
 
-3. Enter the root folder of this repo and install the package:
+4. Enter the root folder of this repo and install the package:
 ```
 $ pip install -r requirements.txt
 $ pip install -e .
 ```
-
-4. Install the gym-carla wrapper following the installation steps in [https://github.com/cjy1992/gym-carla](https://github.com/cjy1992/gym-carla).
 
 ## Usage
 1. Enter the CARLA simulator folder and launch the CARLA server by:

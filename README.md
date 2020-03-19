@@ -1,5 +1,5 @@
 # Interpretable End-to-end Autonomous Driving
-[[Project webpage]](https://sites.google.com/berkeley.edu/interp-e2e-driving/home) [[Paper]](https://arxiv.org/abs/2001.08726)
+[[Project webpage]](https://sites.google.com/berkeley.edu/interp-e2e/) [[Paper]](https://arxiv.org/abs/2001.08726)
 
 This repo contains code for [Interpretable End-to-end Urban Autonomous Driving with Latent Deep Reinforcement Learning](https://arxiv.org/abs/2001.08726). This work introduces an end-to-end autonomous driving approach which is able to handle complex urban scenarios, and at the same time generates a semantic birdeye mask interpreting how the learned agents reasons about the environment. This repo also provides implementation of popular model-free reinforcement learning algorithms (DQN, DDPG, TD3, SAC) on the urban autonomous driving problem in CARLA simulator. All of the algorithms take raw camera and lidar sensor inputs.
 

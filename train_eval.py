@@ -86,7 +86,7 @@ def load_carla_env(
   obs_range=32,
   lidar_bin=0.5,
   d_behind=12,
-  out_lane_thres=1.7,
+  out_lane_thres=2.0,
   desired_speed=8,
   max_ego_spawn_times=200,
   display_route=True,

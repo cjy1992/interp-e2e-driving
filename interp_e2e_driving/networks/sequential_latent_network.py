@@ -396,8 +396,8 @@ class SequentialLatentModelHierarchical(tf.Module):
     posterior_images = tf.concat(list(posterior_images.values()), axis=-2)
     return posterior_images
 
-  def compute_loss(self, images, actions, step_types, latent_posterior_samples_and_dists=None, num_first_image=5):
-    """Compute the loss for learning the sequential latent model."""
+  def compute_latents(self, images, actions, step_types, latent_posterior_samples_and_dists=None, num_first_image=5):
+    """Compute the latent states of the sequential latent model."""
     sequence_length = step_types.shape[1] - 1
 
     # Get posterior and prior samples of latents
@@ -442,6 +442,24 @@ class SequentialLatentModelHierarchical(tf.Module):
         functools.partial(where_and_concat, latent2_reset_masks),
         latent2_first_prior_dists,
         latent2_after_first_prior_dists)
+
+    return (latent1_posterior_dists, latent1_prior_dists), (latent2_posterior_dists,
+      latent2_prior_dists), (latent1_posterior_samples, latent1_prior_samples,
+      latent1_conditional_prior_samples), (latent2_posterior_samples, latent2_prior_samples,
+      latent2_conditional_prior_samples)
+
+
+  def compute_loss(self, images, actions, step_types, latent_posterior_samples_and_dists=None, num_first_image=5):
+    # Compuate the latents
+    latent1_dists, latent2_dists, latent1_samples, latent2_samples = \
+      self.compute_latents(images, actions, step_types, latent_posterior_samples_and_dists, num_first_image)
+
+    latent1_posterior_dists, latent1_prior_dists = latent1_dists
+    latent2_posterior_dists, latent2_prior_dists = latent2_dists
+    latent1_posterior_samples, latent1_prior_samples, \
+      latent1_conditional_prior_samples = latent1_samples
+    latent2_posterior_samples, latent2_prior_samples, \
+      latent2_conditional_prior_samples = latent2_samples
 
     # Compute the KL divergence part of the ELBO
     outputs = {}
@@ -742,8 +760,8 @@ class SequentialLatentModelNonHierarchical(tf.Module):
     posterior_images = tf.concat(list(posterior_images.values()), axis=-2)
     return posterior_images
 
-  def compute_loss(self, images, actions, step_types, latent_posterior_samples_and_dists=None):
-    """Compute the loss for learning the sequential latent model."""
+  def compute_latents(self, images, actions, step_types, latent_posterior_samples_and_dists=None):
+    """Compute the latent states of the sequential latent model."""
     sequence_length = step_types.shape[1] - 1
 
     # Get posterior and prior samples of latents
@@ -778,6 +796,15 @@ class SequentialLatentModelNonHierarchical(tf.Module):
         functools.partial(where_and_concat, latent_reset_masks),
         latent_first_prior_dists,
         latent_after_first_prior_dists)
+
+    return (latent_posterior_dists, latent_prior_dists), (latent_posterior_samples,
+      latent_prior_samples, latent_conditional_prior_samples)
+
+  def compute_loss(self, images, actions, step_types, latent_posterior_samples_and_dists=None):
+    # Compuate the latents
+    latent_dists, latent_samples = self.compute_latents(images, actions, step_types, latent_posterior_samples_and_dists)
+    latent_posterior_dists, latent_prior_dists = latent_dists
+    latent_posterior_samples, latent_prior_samples, latent_conditional_prior_samples = latent_samples
 
     # Compute the KL divergence part of the ELBO
     outputs = {}

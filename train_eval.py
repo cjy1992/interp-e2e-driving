@@ -137,7 +137,6 @@ def load_carla_env(
 
   if action_repeat > 1:
     py_env = wrappers.ActionRepeat(py_env, action_repeat)
-    # eval_py_env = wrappers.ActionRepeat(eval_py_env, action_repeat)
 
   return py_env, eval_py_env
 

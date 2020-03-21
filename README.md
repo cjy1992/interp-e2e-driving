@@ -10,9 +10,9 @@ $ conda create -n env_name python=3.6
 $ conda activate env_name
 ```
 
-2. Install the gym-carla wrapper following the installation steps in [https://github.com/cjy1992/gym-carla](https://github.com/cjy1992/gym-carla).
+2. Install the gym-carla wrapper following the installation steps 2-4 in [https://github.com/cjy1992/gym-carla](https://github.com/cjy1992/gym-carla).
 
-3. Clone this git repo
+3. Clone this git repo to an appropriate folder
 ```
 $ git clone https://github.com/cjy1992/interp-e2e-driving.git
 ```

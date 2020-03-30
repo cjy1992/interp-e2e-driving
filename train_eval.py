@@ -91,6 +91,7 @@ def load_carla_env(
   max_ego_spawn_times=200,
   display_route=True,
   pixor_size=64,
+  pixor=False,
   obs_channels=None,
   action_repeat=1):
   """Loads train and eval environments."""
@@ -119,6 +120,7 @@ def load_carla_env(
     'max_ego_spawn_times': max_ego_spawn_times,  # maximum times to spawn ego vehicle
     'display_route': display_route,  # whether to render the desired route
     'pixor_size': pixor_size,  # size of the pixor labels
+    'pixor': pixor,  # whether to output PIXOR observation
   }
 
   gym_spec = gym.spec(env_name)

@@ -361,7 +361,6 @@ def train_eval(
     gpu_allow_growth=True,  # GPU memory growth
     gpu_memory_limit=None,  # GPU memory limit
     action_repeat=1):  # Name of single observation channel, ['camera', 'lidar', 'birdeye']
-  """A simple train and eval for SLAC."""
   # Setup GPU
   gpus = tf.config.experimental.list_physical_devices('GPU')
   if gpu_allow_growth:

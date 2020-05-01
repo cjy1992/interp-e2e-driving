@@ -21,7 +21,7 @@ $ conda activate env_name
 $ git clone https://github.com/cjy1992/interp-e2e-driving.git
 ```
 
-4. Enter the root folder of this repo and install the package:
+4. Enter the root folder of this repo and install the packages:
 ```
 $ pip install -r requirements.txt
 $ pip install -e .
@@ -46,6 +46,11 @@ $ ./run_train_eval.sh
 It will then connect to the CARLA simulator, collect exploration data, train and evaluate the agent. Parameters are stored in ```params.gin```. Set train_eval.agent_name from ['latent_sac', 'dqn', 'ddpg', 'td3', 'sac'] to choose the reinforcement learning algorithm.
 
 3. Run `tensorboard --logdir logs` and open http://localhost:6006 to view training and evaluation information.
+
+## Trouble Shootings
+1. If out of system memory, change the parameter ```replay_buffer_capacity``` and ```initial_collect_steps``` the function ```tran_eval``` smaller.
+
+2. If out of CUDA memory, set parameter ```model_batch_size``` or ```sequence_length``` of the function ```tran_eval``` smaller.
 
 ## Citation
 If you find this useful for your research, please use the following.

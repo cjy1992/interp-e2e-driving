@@ -422,7 +422,7 @@ def train_eval(
         model_network_ctor = sequential_latent_network.SequentialLatentModelNonHierarchical
       else:
         raise NotImplementedError
-      model_net = model_network_ctor(input_names, input_names+mask_names)
+      model_net = model_network_ctor(input_names, input_names+mask_names, obs_size=py_env.obs_size)
 
       # Get the latent spec
       latent_size = model_net.latent_size
